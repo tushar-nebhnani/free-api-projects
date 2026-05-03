@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Jokes Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800"
+  >
+    <!-- Main Card Container -->
+    <div
+      class="max-w-lg w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8 text-center border border-slate-200"
+    >
+      <!-- Header Badge -->
+      <div class="mb-8">
+        <span
+          class="bg-yellow-100 text-yellow-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider"
+        >
+          Random Joke API
+        </span>
+      </div>
+
+      <!-- ================= UI STATES ================= -->
+
+      <!-- 1. Loading State (Skeleton Loader) -->
+      <div id="loader" class="flex flex-col space-y-4 animate-pulse my-10">
+        <div class="h-5 bg-slate-200 rounded w-3/4 mx-auto"></div>
+        <div class="h-5 bg-slate-200 rounded w-1/2 mx-auto"></div>
+        <div class="h-5 bg-slate-200 rounded w-5/6 mx-auto mt-4"></div>
+      </div>
+
+      <!-- 2. Error State -->
+      <div
+        id="error-container"
+        class="hidden my-10 text-red-500 bg-red-50 p-4 rounded-lg"
+      >
+        <p class="font-medium">Oops! Couldn't load a joke. Please try again.</p>
+      </div>
+
+      <!-- 3. Success Data State -->
+      <div id="joke-container" class="hidden my-10 space-y-6">
+        <!-- Setup Text -->
+        <p
+          id="joke-setup"
+          class="text-2xl font-bold text-slate-800 leading-tight"
+        ></p>
+
+        <!-- Punchline Text -->
+        <div
+          class="inline-block bg-indigo-50 border border-indigo-100 p-4 rounded-xl mt-4"
+        >
+          <p
+            id="joke-punchline"
+            class="text-lg italic text-indigo-700 font-medium"
+          ></p>
+        </div>
+      </div>
+
+      <!-- ================= CONTROLS ================= -->
+
+      <button
+        id="next-btn"
+        class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
+      >
+        <span>Get Another Joke</span>
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ================= DOM MANIPULATION SCRIPT ================= -->
+    <script>
+      const UI = {
+        elements: {
+          loader: document.getElementById("loader"),
+          jokeContainer: document.getElementById("joke-container"),
+          errorContainer: document.getElementById("error-container"),
+          setupText: document.getElementById("joke-setup"),
+          punchlineText: document.getElementById("joke-punchline"),
+          nextBtn: document.getElementById("next-btn"),
+        },
+
+        showLoading() {
+          this.elements.loader.classList.remove("hidden");
+          this.elements.jokeContainer.classList.add("hidden");
+          this.elements.errorContainer.classList.add("hidden");
+
+          this.elements.nextBtn.disabled = true;
+          this.elements.nextBtn.classList.add(
+            "opacity-70",
+            "cursor-not-allowed",
+          );
+          this.elements.nextBtn.querySelector("span").textContent =
+            "Loading...";
+        },
+
+        showJoke(setup, punchline) {
+          this.elements.loader.classList.add("hidden");
+          this.elements.errorContainer.classList.add("hidden");
+
+          this.elements.setupText.textContent = setup;
+          this.elements.punchlineText.textContent = punchline;
+
+          this.elements.jokeContainer.classList.remove("hidden");
+
+          this.elements.nextBtn.disabled = false;
+          this.elements.nextBtn.classList.remove(
+            "opacity-70",
+            "cursor-not-allowed",
+          );
+          this.elements.nextBtn.querySelector("span").textContent =
+            "Get Another Joke";
+        },
+
+        showError() {
+          this.elements.loader.classList.add("hidden");
+          this.elements.jokeContainer.classList.add("hidden");
+          this.elements.errorContainer.classList.remove("hidden");
+
+          this.elements.nextBtn.disabled = false;
+          this.elements.nextBtn.classList.remove(
+            "opacity-70",
+            "cursor-not-allowed",
+          );
+          this.elements.nextBtn.querySelector("span").textContent = "Try Again";
+        },
+
+        onNextJoke(callback) {
+          this.elements.nextBtn.addEventListener("click", callback);
+        },
+      };
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
