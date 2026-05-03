@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Directory | FreeAPI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center flex flex-col items-center">
+        <h1
+          class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2"
+        >
+          User Directory
+        </h1>
+        <p class="text-slate-500 mb-6">
+          Discover random user profiles generated via API.
+        </p>
+        <button
+          id="load-more-btn"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm transition-colors duration-200 flex items-center gap-2 active:scale-95"
+        >
+          <span id="btn-text">Load New Users</span>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
+          </svg>
+        </button>
+      </header>
+
+      <!-- ================= UI STATES ================= -->
+
+      <!-- 1. Loading State (Skeleton Grid) -->
+      <div
+        id="loader"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
+        <!-- Repeating skeleton cards -->
+        <div
+          class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 animate-pulse flex flex-col items-center h-[280px]"
+        >
+          <div class="w-24 h-24 bg-slate-200 rounded-full mb-4"></div>
+          <div class="h-5 bg-slate-200 rounded w-3/4 mb-3"></div>
+          <div class="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
+          <div class="w-full space-y-2 mt-auto">
+            <div class="h-3 bg-slate-200 rounded w-full"></div>
+            <div class="h-3 bg-slate-200 rounded w-5/6 mx-auto"></div>
+          </div>
+        </div>
+        <!-- Duplicates for the grid layout -->
+        <div
+          class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 animate-pulse flex flex-col items-center h-[280px] hidden sm:flex"
+        >
+          <div class="w-24 h-24 bg-slate-200 rounded-full mb-4"></div>
+          <div class="h-5 bg-slate-200 rounded w-3/4 mb-3"></div>
+          <div class="w-full space-y-2 mt-auto">
+            <div class="h-3 bg-slate-200 rounded w-full"></div>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 animate-pulse flex flex-col items-center h-[280px] hidden md:flex"
+        >
+          <div class="w-24 h-24 bg-slate-200 rounded-full mb-4"></div>
+          <div class="h-5 bg-slate-200 rounded w-3/4 mb-3"></div>
+          <div class="w-full space-y-2 mt-auto">
+            <div class="h-3 bg-slate-200 rounded w-full"></div>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 animate-pulse flex flex-col items-center h-[280px] hidden lg:flex"
+        >
+          <div class="w-24 h-24 bg-slate-200 rounded-full mb-4"></div>
+          <div class="h-5 bg-slate-200 rounded w-3/4 mb-3"></div>
+          <div class="w-full space-y-2 mt-auto">
+            <div class="h-3 bg-slate-200 rounded w-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Error State -->
+      <div id="error-container" class="hidden text-center py-12">
+        <div
+          class="inline-block bg-red-50 text-red-600 p-8 rounded-2xl border border-red-100 max-w-md"
+        >
+          <svg
+            class="w-12 h-12 mx-auto mb-4 text-red-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <h3 class="text-xl font-bold">Failed to load directory</h3>
+          <p class="text-sm mt-2 text-red-500">
+            We couldn't fetch the user profiles. Please try again.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Success Data State (Grid) -->
+      <div
+        id="users-grid"
+        class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
+        <!-- User cards will be injected here by JS -->
+      </div>
+    </div>
+
+    <!-- ================= DOM MANIPULATION SCRIPT ================= -->
+    <script>
+      const UI = {
+        elements: {
+          loader: document.getElementById("loader"),
+          grid: document.getElementById("users-grid"),
+          error: document.getElementById("error-container"),
+          loadBtn: document.getElementById("load-more-btn"),
+          btnText: document.getElementById("btn-text"),
+        },
+
+        showLoading() {
+          this.elements.loader.classList.remove("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+
+          this.elements.loadBtn.disabled = true;
+          this.elements.loadBtn.classList.add("opacity-70", "cursor-wait");
+          this.elements.btnText.textContent = "Fetching...";
+        },
+
+        showError() {
+          this.elements.loader.classList.add("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.remove("hidden");
+
+          this.elements.loadBtn.disabled = false;
+          this.elements.loadBtn.classList.remove("opacity-70", "cursor-wait");
+          this.elements.btnText.textContent = "Try Again";
+        },
+
+        showUsers(usersArray) {
+          this.elements.loader.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+
+          this.elements.grid.innerHTML = "";
+
+          usersArray.forEach((user) => {
+            const card = document.createElement("div");
+            card.className =
+              "bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col items-center p-6 group";
+
+            // Fallbacks and string building
+            const name = user.name
+              ? `${user.name.title} ${user.name.first} ${user.name.last}`
+              : "Unknown User";
+            const image =
+              (user.picture && (user.picture.large || user.picture.medium)) ||
+              "https://via.placeholder.com/150";
+            const age = user.dob && user.dob.age ? user.dob.age : "N/A";
+            const location = user.location
+              ? `${user.location.city}, ${user.location.country}`
+              : "Unknown Location";
+            const email = user.email || "No email provided";
+
+            card.innerHTML = `
+                        <div class="relative mb-4">
+                            <img src="${image}" alt="${name}" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md group-hover:border-blue-50 transition-colors">
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 text-center leading-tight">${name}</h2>
+                        <p class="text-xs text-blue-600 font-bold mt-1 uppercase tracking-wider mb-4">Age: ${age}</p>
+                        
+                        <div class="mt-auto w-full pt-4 border-t border-slate-100 space-y-2 text-sm text-slate-500">
+                            <p class="flex items-center justify-center gap-2" title="${email}">
+                                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                <span class="truncate w-40 text-center">${email}</span>
+                            </p>
+                            <p class="flex items-center justify-center gap-2" title="${location}">
+                                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span class="truncate w-40 text-center">${location}</span>
+                            </p>
+                        </div>
+                    `;
+            this.elements.grid.appendChild(card);
+          });
+
+          this.elements.grid.classList.remove("hidden");
+
+          // Reset button state
+          this.elements.loadBtn.disabled = false;
+          this.elements.loadBtn.classList.remove("opacity-70", "cursor-wait");
+          this.elements.btnText.textContent = "Load New Users";
+        },
+
+        onLoadRequest(callback) {
+          this.elements.loadBtn.addEventListener("click", callback);
+        },
+      };
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
