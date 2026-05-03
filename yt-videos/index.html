@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VideoTube | FreeAPI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
+    <!-- Top Navigation Bar (Mockup) -->
+    <nav
+      class="bg-white px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm"
+    >
+      <div class="flex items-center gap-4">
+        <svg
+          class="w-6 h-6 text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+        <div class="flex items-center gap-1">
+          <svg
+            class="w-8 h-8 text-red-600"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"
+            />
+          </svg>
+          <span class="text-xl font-bold tracking-tighter">VideoTube</span>
+        </div>
+      </div>
+      <div class="hidden md:flex flex-1 max-w-2xl mx-8">
+        <input
+          type="text"
+          placeholder="Search"
+          class="w-full border border-gray-300 rounded-l-full px-4 py-2 focus:outline-none focus:border-blue-500"
+        />
+        <button
+          class="bg-gray-100 border border-l-0 border-gray-300 rounded-r-full px-5 py-2 hover:bg-gray-200"
+        >
+          <svg
+            class="w-5 h-5 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <div
+        class="w-8 h-8 bg-blue-600 rounded-full text-white flex items-center justify-center font-bold text-sm"
+      >
+        U
+      </div>
+    </nav>
+
+    <main class="p-4 sm:p-6 max-w-[1600px] mx-auto">
+      <!-- ================= UI STATES ================= -->
+
+      <!-- 1. Loading State (YouTube Style Skeletons) -->
+      <div
+        id="loader"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8"
+      >
+        <!-- Repeating skeleton cards -->
+        <div class="animate-pulse flex flex-col gap-3">
+          <div class="w-full aspect-video bg-gray-200 rounded-xl"></div>
+          <div class="flex gap-3 pr-6">
+            <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0"></div>
+            <div class="flex flex-col gap-2 w-full pt-1">
+              <div class="h-4 bg-gray-200 rounded w-full"></div>
+              <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2 mt-1"></div>
+            </div>
+          </div>
+        </div>
+        <div class="animate-pulse flex flex-col gap-3 hidden sm:flex">
+          <div class="w-full aspect-video bg-gray-200 rounded-xl"></div>
+          <div class="flex gap-3 pr-6">
+            <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0"></div>
+            <div class="flex flex-col gap-2 w-full pt-1">
+              <div class="h-4 bg-gray-200 rounded w-full"></div>
+              <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2 mt-1"></div>
+            </div>
+          </div>
+        </div>
+        <div class="animate-pulse flex flex-col gap-3 hidden lg:flex">
+          <div class="w-full aspect-video bg-gray-200 rounded-xl"></div>
+          <div class="flex gap-3 pr-6">
+            <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0"></div>
+            <div class="flex flex-col gap-2 w-full pt-1">
+              <div class="h-4 bg-gray-200 rounded w-full"></div>
+              <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2 mt-1"></div>
+            </div>
+          </div>
+        </div>
+        <div class="animate-pulse flex flex-col gap-3 hidden xl:flex">
+          <div class="w-full aspect-video bg-gray-200 rounded-xl"></div>
+          <div class="flex gap-3 pr-6">
+            <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0"></div>
+            <div class="flex flex-col gap-2 w-full pt-1">
+              <div class="h-4 bg-gray-200 rounded w-full"></div>
+              <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2 mt-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Error State -->
+      <div id="error-container" class="hidden text-center py-20">
+        <svg
+          class="w-16 h-16 mx-auto mb-4 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <h3 class="text-xl font-bold">Something went wrong</h3>
+        <p class="text-gray-500 mt-2">
+          We couldn't load the videos. Please try again later.
+        </p>
+        <button
+          onclick="window.location.reload()"
+          class="mt-4 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 text-blue-600 font-medium"
+        >
+          Retry
+        </button>
+      </div>
+
+      <!-- 3. Success Data State (Video Grid) -->
+      <div
+        id="videos-grid"
+        class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10"
+      >
+        <!-- Video cards will be injected here by JS -->
+      </div>
+    </main>
+
+    <!-- ================= DOM MANIPULATION SCRIPT ================= -->
+    <script>
+      const UI = {
+        elements: {
+          loader: document.getElementById("loader"),
+          grid: document.getElementById("videos-grid"),
+          error: document.getElementById("error-container"),
+        },
+
+        showLoading() {
+          this.elements.loader.classList.remove("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+        },
+
+        showError() {
+          this.elements.loader.classList.add("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.remove("hidden");
+        },
+
+        showVideos(videosArray) {
+          this.elements.loader.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+          this.elements.grid.innerHTML = "";
+
+          videosArray.forEach((video) => {
+            const card = document.createElement("div");
+            card.className = "flex flex-col gap-3 group cursor-pointer";
+
+            // Note: You may need to adjust these dot-notations based exactly on how
+            // the FreeAPI Youtube endpoint structures its JSON response.
+            const title =
+              video.items?.snippet?.title ||
+              video.snippet?.title ||
+              video.title ||
+              "Untitled Video";
+            const channelName =
+              video.items?.snippet?.channelTitle ||
+              video.snippet?.channelTitle ||
+              video.channelName ||
+              "Unknown Channel";
+            const views = video.views
+              ? `${(video.views / 1000).toFixed(1)}K views`
+              : "12K views"; // Mock if missing
+            const timeAgo = video.timeAgo || "2 days ago"; // Mock if missing
+
+            // Try to get the highest resolution thumbnail available
+            let thumbnail =
+              "https://via.placeholder.com/640x360?text=No+Thumbnail";
+            if (video.snippet?.thumbnails) {
+              thumbnail =
+                video.snippet.thumbnails.maxres?.url ||
+                video.snippet.thumbnails.high?.url ||
+                video.snippet.thumbnails.medium?.url;
+            } else if (video.thumbnail) {
+              thumbnail = video.thumbnail;
+            }
+
+            // Generate a random avatar color/letter based on channel name
+            const initial = channelName.charAt(0).toUpperCase();
+            const colors = [
+              "bg-red-500",
+              "bg-blue-500",
+              "bg-green-500",
+              "bg-purple-500",
+              "bg-yellow-500",
+            ];
+            const randomColor =
+              colors[Math.floor(Math.random() * colors.length)];
+
+            card.innerHTML = `
+                        <!-- Thumbnail Box -->
+                        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-200">
+                            <img src="${thumbnail}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <!-- Optional mock duration badge -->
+                            <span class="absolute bottom-1.5 right-1.5 bg-black/80 text-white text-xs font-medium px-1.5 py-0.5 rounded">10:24</span>
+                        </div>
+                        
+                        <!-- Video Details -->
+                        <div class="flex gap-3 pr-6">
+                            <!-- Channel Avatar -->
+                            <div class="w-9 h-9 rounded-full text-white flex items-center justify-center shrink-0 ${randomColor} text-sm font-bold">
+                                ${initial}
+                            </div>
+                            
+                            <!-- Text Data -->
+                            <div class="flex flex-col overflow-hidden">
+                                <h3 class="text-base font-medium text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                    ${title}
+                               </h3>
+                                <p class="text-sm text-gray-600 mt-1 hover:text-gray-900 transition-colors">${channelName}</p>
+                                <div class="text-sm text-gray-600 flex items-center gap-1">
+                                    <span>${views}</span>
+                                    <span class="text-[10px]">•</span>
+                                    <span>${timeAgo}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            this.elements.grid.appendChild(card);
+          });
+
+          this.elements.grid.classList.remove("hidden");
+        },
+      };
+    </script>
+
+    <!-- Load your API logic file here -->
+    <script src="script.js"></script>
+  </body>
+</html>
