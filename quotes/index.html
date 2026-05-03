@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quote Gallery | FreeAPI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-stone-50 text-stone-800 font-serif min-h-screen p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center">
+        <h1
+          class="text-4xl sm:text-5xl font-bold text-stone-900 mb-4 font-sans tracking-tight"
+        >
+          Words of Wisdom
+        </h1>
+        <p class="text-stone-500 font-sans text-lg">
+          A curated collection of quotes to inspire your day.
+        </p>
+      </header>
+
+      <!-- ================= UI STATES ================= -->
+
+      <!-- 1. Loading State (Skeleton Grid) -->
+      <div
+        id="loader"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <!-- Repeating skeleton cards -->
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48"
+        ></div>
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48 hidden md:block"
+        ></div>
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48 hidden md:block"
+        ></div>
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48 hidden lg:block"
+        ></div>
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48 hidden lg:block"
+        ></div>
+        <div
+          class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 animate-pulse h-48 hidden lg:block"
+        ></div>
+      </div>
+
+      <!-- 2. Error State -->
+      <div id="error-container" class="hidden text-center py-16 font-sans">
+        <div
+          class="inline-block bg-red-50 text-red-600 p-8 rounded-2xl border border-red-100 max-w-md"
+        >
+          <svg
+            class="w-12 h-12 mx-auto mb-4 text-red-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <h3 class="text-xl font-bold">Failed to load quotes</h3>
+          <p class="text-sm mt-2 text-red-500">
+            We couldn't fetch the words of wisdom. Please try again.
+          </p>
+          <button
+            onclick="window.location.reload()"
+            class="mt-6 bg-stone-900 hover:bg-stone-800 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Success Data State (Grid) -->
+      <div
+        id="quotes-grid"
+        class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
+      >
+        <!-- Quote cards will be injected here by JS -->
+      </div>
+    </div>
+
+    <!-- ================= DOM MANIPULATION SCRIPT ================= -->
+    <script>
+      /**
+       * The UI object handles all DOM manipulation.
+       * Your API script will call these methods to update the screen.
+       */
+      const UI = {
+        elements: {
+          loader: document.getElementById("loader"),
+          grid: document.getElementById("quotes-grid"),
+          error: document.getElementById("error-container"),
+        },
+
+        showLoading() {
+          this.elements.loader.classList.remove("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+        },
+
+        showError() {
+          this.elements.loader.classList.add("hidden");
+          this.elements.grid.classList.add("hidden");
+          this.elements.error.classList.remove("hidden");
+        },
+
+        showQuotes(quotesArray) {
+          this.elements.loader.classList.add("hidden");
+          this.elements.error.classList.add("hidden");
+
+          // Clear existing content
+          this.elements.grid.innerHTML = "";
+
+          // Generate and inject HTML for each quote
+          quotesArray.forEach((quoteObj) => {
+            const card = document.createElement("div");
+            card.className =
+              "bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300 border border-stone-200 relative overflow-hidden group";
+
+            // Fallbacks for missing data
+            const quoteText =
+              quoteObj.content || quoteObj.quote || "No quote available.";
+            const authorName = quoteObj.author || "Unknown Author";
+            const tags =
+              quoteObj.tags && quoteObj.tags.length > 0
+                ? quoteObj.tags[0]
+                : "Inspiration";
+
+            card.innerHTML = `
+                        <!-- Decorative Quote Icon -->
+                        <div class="absolute top-4 right-4 text-stone-100 group-hover:text-stone-200 transition-colors duration-300">
+                            <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                            </svg>
+                        </div>
+                        
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 bg-stone-100 text-stone-600 text-xs font-sans font-semibold rounded-full uppercase tracking-wider mb-4">
+                                ${tags}
+                            </span>
+                            <blockquote class="text-xl sm:text-2xl text-stone-800 leading-relaxed mb-6">
+                                "${quoteText}"
+                            </blockquote>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-px bg-stone-300"></div>
+                                <cite class="font-sans font-bold text-stone-900 not-italic uppercase tracking-wide text-sm">
+                                    ${authorName}
+                                </cite>
+                            </div>
+                        </div>
+                    `;
+            this.elements.grid.appendChild(card);
+          });
+
+          this.elements.grid.classList.remove("hidden");
+        },
+      };
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
