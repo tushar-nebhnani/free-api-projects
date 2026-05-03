@@ -94,11 +94,13 @@ registerForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch(`${BASE_URL}/register`, {
+    const url = `${BASE_URL}/register`;
+    const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    });
+    };
+    const res = await fetch(url, options);
     const data = await res.json();
 
     if (res.ok) {
@@ -125,11 +127,13 @@ loginForm.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch(`${BASE_URL}/login`, {
+    const url = `${BASE_URL}/login`;
+    const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    });
+    };
+    const res = await fetch(url, options);
     const data = await res.json();
 
     if (res.ok) {
@@ -156,13 +160,15 @@ async function fetchCurrentUser() {
   profileData.classList.add("hidden");
 
   try {
-    const res = await fetch(`${BASE_URL}/current-user`, {
+    const url = `${BASE_URL}/current-user`;
+    const options = {
       method: "GET",
       headers: {
         Authorization: `Bearer ${getToken()}`,
         "Content-Type": "application/json",
       },
-    });
+    };
+    const res = await fetch(url, options);
     const data = await res.json();
 
     if (res.ok) {
@@ -190,20 +196,21 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
   setLoading("logout", true, "Logout");
 
   try {
-    const res = await fetch(`${BASE_URL}/logout`, {
+    const url = `${BASE_URL}/logout`;
+    const options = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${getToken()}`,
         "Content-Type": "application/json",
       },
-    });
+    };
+    const res = await fetch(url, options);
 
     if (res.ok) {
       removeToken();
       showToast("Logged out successfully");
       toggleScreen("login-screen");
     } else {
-      // Force logout locally even if API fails
       removeToken();
       toggleScreen("login-screen");
     }

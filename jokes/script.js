@@ -7,7 +7,6 @@ async function fetchNewJoke() {
   try {
     const res = await fetch(url, options);
     const data = await res.json();
-    console.log(data);
 
     UI.showJoke(data.data.content);
   } catch (error) {
