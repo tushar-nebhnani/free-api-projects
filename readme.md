@@ -1,24 +1,28 @@
 # FreeAPI Projects
 
-This repository is for practising fetching APIs and building small frontend projects using public APIs.
+A single React + Vite dashboard for practising public API integration. The home page lists every mini project; each one lives as a standalone route within the same app.
 
 ## What's included
 
-- `auth-app/`
-- `jokes-viewer/`
-- `meal-listing/`
-- `product-listing/`
-- `quotes/`
-- `random-cat/`
-- `random-user/`
-- `yt-videos/`
+- Auth App (`/auth-app`)
+- Jokes Viewer (`/jokes-viewer`)
+- Recipe Explorer (`/meal-listing`)
+- Store (`/product-listing`)
+- Quote Gallery (`/quotes`)
+- Purr-fect Pics (`/random-cat`)
+- User Directory (`/random-user`)
+- VideoTube (`/yt-videos`)
 
-Each folder is a standalone Vite + React app that demonstrates API fetching and rendering results in the browser.
-
-## Running a project
+## Running
 
 ```
-cd <project-folder>
 npm install
 npm run dev
+```
+
+## Building
+
+```
+npm run build
+npm run preview
 ```
