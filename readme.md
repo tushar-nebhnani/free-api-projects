@@ -2,10 +2,10 @@
 
 This repository is for practising fetching APIs and building small frontend projects using public APIs.
 
-## What’s included
+## What's included
 
 - `auth-app/`
-- `jokes/`
+- `jokes-viewer/`
 - `meal-listing/`
 - `product-listing/`
 - `quotes/`
@@ -13,8 +13,12 @@ This repository is for practising fetching APIs and building small frontend proj
 - `random-user/`
 - `yt-videos/`
 
-Each folder contains a simple HTML/JS app that demonstrates API fetching and rendering results in the browser.
+Each folder is a standalone Vite + React app that demonstrates API fetching and rendering results in the browser.
 
-## Future plan
+## Running a project
 
-This repo will be revamped into React, with each project rebuilt as a React app to make the API practice more reusable and maintainable.
+```
+cd <project-folder>
+npm install
+npm run dev
+```
